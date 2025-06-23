@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <%- include("./partials/sidebar.ejs") %>
+    <div id="content">
+        <div id="reading-section">
+            <h2>📘 Finished Reading</h2>
+            <% if(books.length > 0) { %>
+            <p class="section-subtext">Here are the books you've completed — well done on finishing them!</p>
+                <% } else { %>
+                    <p class="section-subtext">Your reading journey is still unfolding. Completed books will appear here soon!</p>
+                <% } %>
+            <div class="scroll-container">
+                <div class="read-list">
+                    <% books.forEach(book => { %>
+                        <div class="read-book">
+                            <div class="read-book-info">
+                                <h3 class="title"><%= book.title %></h3>
+                                <div class="author">By <%= book.author %></div>
+                                <div class="bookgenre">Genre: <%= book.genre %></div>
+                            </div>
+                            <div class="read-book-info-2">
+                                <form class="remarks-form" data-doc="<%= book._id %>">
+                                        <textarea class="remarks-input" name="remarks" placeholder="Enter remarks"><%= book.remarks %></textarea>
+                                        <button type="submit" class="remarks-btn">Save Remarks</button>
+                                </form>
+                            </div>
+                            <div class="book-actions"> 
+                               <a class="delete-btn" data-doc="<%= book._id %>">Delete</a>
+                               <div class="read-book-rating">
+                                    <form class="rating-form" data-doc="<%= book._id %>">
+                                        <label for="rating-<%= book._id %>">Rating:</label>
+                                        <select name="rating" class="rating-select" id="rating-<%= book._id %>">
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <option value="<%= i %>" <%= book.rating == i ? 'selected' : '' %>><%= i %> ⭐</option>
+                                            <% } %>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+
+        </div>
+
+        <%- include("./partials/stats")  %>
+        <button id="sidebar-toggle" class="hamburger">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        
+        <script>
+
+            // save remarks 
+            document.addEventListener("DOMContentLoaded", () => {
+                const forms = document.querySelectorAll('.remarks-form');
+
+                forms.forEach(form => {
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+
+                        const id = form.dataset.doc;
+                        const endpoint = `/update-remarks/${id}`;
+                        const textarea = form.querySelector("textarea");
+                        const remarks = textarea.value;
+
+                        try {
+                            await fetch(endpoint, {
+                                method: "POST",
+                                headers: {
+                                "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ remarks })
+                            });
+                        } 
+                        catch (err) {
+                            console.error(err);
+                        }
+                    });
+                });
+            });
+
+            //delete book
+            document.addEventListener("DOMContentLoaded", () => {
+                const deleteButtons = document.querySelectorAll(".delete-btn");
+
+                deleteButtons.forEach(button => {
+                    button.addEventListener("click", (e) => {
+                        e.preventDefault();
+
+                        const endpoint = `/read/delete-book/${button.dataset.doc}`;
+
+                        fetch(endpoint, {
+                            method: "DELETE"
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            window.location.href = data.redirect;
+                        })
+                        .catch(err => console.log(err));
+                    });
+                });
+            });
+            //rating system
+            document.addEventListener("DOMContentLoaded", () => {
+                const ratingForms = document.querySelectorAll(".rating-form");
+
+                ratingForms.forEach(form => {
+                    const select = form.querySelector(".rating-select");
+
+                    select.addEventListener("change", async () => {
+                        const rating = select.value;
+                        const id = form.dataset.doc;
+                        const endpoint = `/update-rating/${id}`;
+
+                        try {
+                            await fetch(endpoint, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ rating })
+                            });
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    });
+                });
+            });
+
+
+            //side bar toggle
+            const sidebarToggle = document.getElementById("sidebar-toggle");
+            const sidebar = document.getElementById("sidebar");
+
+            sidebarToggle.addEventListener("click", () => {
+                sidebar.classList.toggle("active");
+            });
+        </script>
+
+    </div>
+</body>
+</html>

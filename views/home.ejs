@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <%- include("./partials/sidebar.ejs") %>
+    <div id="content">
+        <div id="currentread">
+            <span>Hello, book lover.</span>
+            <p>Track, reflect, and grow with every book you read.</p>
+        </div>
+
+        <%- include("./partials/stats")  %>
+    </div>
+    <button id="sidebar-toggle" class="hamburger">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <script>
+        //side bar toggle
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        const sidebar = document.getElementById("sidebar");
+
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
+    </script>
+</body>
+</html>

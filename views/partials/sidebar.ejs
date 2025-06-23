@@ -1,0 +1,76 @@
+    <div id="sidebar">
+        <div id="top">
+            <div id="icon"><i class="fa-solid fa-book"></i> Book Tracker</div>
+            <a href="/home"><div id="home"><i class="fa-solid fa-house"></i> Home</div></a>
+
+            <div id="library">Library
+                <a href="/reading"><div><i class="fa-solid fa-eye"></i> Reading</div></a>
+                <a href="/read"><div><i class="fa-solid fa-check"></i> Read</div></a>
+            </div>
+
+            <div id="collections">Collections
+                <a href="/addbook"><div><i class="fa-regular fa-square-plus"></i> Add Book</div></a>
+            </div>
+            <div id="filter">
+                <form action="/books" method="GET">
+                    <label for="genre-select"><i class="fa-solid fa-filter"></i> Genre Filter</label>
+                    <select id="genre-select" name="genre" onchange="this.form.submit()">
+                        <option>None</option>
+                        <option value="Fiction" <%= selectedGenre === 'Fiction' ? 'selected' : '' %>>Fiction</option>
+                        <option value="Non-fiction" <%= selectedGenre === 'Non-fiction' ? 'selected' : '' %>>Non-Fiction</option>
+                        <option value="Fantasy" <%= selectedGenre === 'Fantasy' ? 'selected' : '' %>>Fantasy</option>
+                        <option value="Sci-fi" <%= selectedGenre === 'Sci-fi' ? 'selected' : '' %>>Sci-Fi</option>
+                        <option value="Mystery" <%= selectedGenre === 'Mystery' ? 'selected' : '' %>>Mystery</option>
+                        <option value="Thriller" <%= selectedGenre === 'Thriller' ? 'selected' : '' %>>Thriller</option>
+                        <option value="Romance" <%= selectedGenre === 'Romance' ? 'selected' : '' %>>Romance</option>
+                        <option value="Historical-fiction" <%= selectedGenre === 'Historical-fiction' ? 'selected' : '' %>>Historical Fiction</option>
+                        <option value="Young-adult" <%= selectedGenre === 'Young-adult' ? 'selected' : '' %>>Young Adult (YA)</option>
+                        <option value="Children" <%= selectedGenre === 'Children' ? 'selected' : '' %>>Children's</option>
+                        <option value="Graphic-novel" <%= selectedGenre === 'Graphic-novel' ? 'selected' : '' %>>Graphic Novel</option>
+                        <option value="Biography" <%= selectedGenre === 'Biography' ? 'selected' : '' %>>Biography</option>
+                        <option value="Autobiography" <%= selectedGenre === 'Autobiography' ? 'selected' : '' %>>Autobiography</option>
+                        <option value="Self-help" <%= selectedGenre === 'Self-help' ? 'selected' : '' %>>Self-Help</option>
+                        <option value="Philosophy" <%= selectedGenre === 'Philosophy' ? 'selected' : '' %>>Philosophy</option>
+                        <option value="Psychology" <%= selectedGenre === 'Psychology' ? 'selected' : '' %>>Psychology</option>
+                        <option value="Science" <%= selectedGenre === 'Science' ? 'selected' : '' %>>Science</option>
+                        <option value="Technology" <%= selectedGenre === 'Technology' ? 'selected' : '' %>>Technology</option>
+                        <option value="History" <%= selectedGenre === 'History' ? 'selected' : '' %>>History</option>
+                        <option value="Poetry" <%= selectedGenre === 'Poetry' ? 'selected' : '' %>>Poetry</option>
+                        <option value="Travel" <%= selectedGenre === 'Travel' ? 'selected' : '' %>>Travel</option>
+                        <option value="Spirituality" <%= selectedGenre === 'Spirituality' ? 'selected' : '' %>>Spirituality</option>
+                        <option value="Business" <%= selectedGenre === 'Business' ? 'selected' : '' %>>Business</option>
+                        <option value="Economics" <%= selectedGenre === 'Economics' ? 'selected' : '' %>>Economics</option>
+                        <option value="Education" <%= selectedGenre === 'Education' ? 'selected' : '' %>>Education</option>
+                        <option value="Politics" <%= selectedGenre === 'Politics' ? 'selected' : '' %>>Politics</option>
+                        <option value="Health" <%= selectedGenre === 'Health' ? 'selected' : '' %>>Health & Wellness</option>
+                        <option value="Cookbook" <%= selectedGenre === 'Cookbook' ? 'selected' : '' %>>Cookbooks</option>
+                        <option value="Art" <%= selectedGenre === 'Art' ? 'selected' : '' %>>Art</option>
+                        <option value="Humor" <%= selectedGenre === 'Humor' ? 'selected' : '' %>>Humor</option>
+                        <option value="Sports" <%= selectedGenre === 'Sports' ? 'selected' : '' %>>Sports</option>
+                    </select>
+                </form>
+            </div>
+
+        </div>
+
+        <div id="bottom">
+            <div id="user">
+                <i class="fa-solid fa-user"></i>
+                <div>
+                    <div id="user-name">
+                        <% if (user) { %>
+                        <p class="sidebar-welcome">Welcome, <%= user.name %>!</p>
+                        <% } else { %>
+                        <p class="sidebar-welcome">Welcome, Guest</p>
+                        <% } %>
+                    </div>
+                    <div id="user-status">Book Lover 📚</div>
+                </div>
+            </div>
+            <form id="logoutForm" action="/logout" method="POST" style="display: inline;">
+                <button type="submit">
+                    Log out
+                </button>
+            </form>
+        </div>
+    </div>

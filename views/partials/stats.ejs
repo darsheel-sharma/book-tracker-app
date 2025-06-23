@@ -1,0 +1,18 @@
+<div id="stats">
+  <h3>All Time Statistics</h3>
+  <% if (user) { %>
+    <div id="statbox">
+      <div id="numbooks" class="num">
+        Books: <%= user.totalBooks%>
+      </div>
+      <div id="numread" class="num">
+        Books Read: <%= user.completedBooks%>
+      </div>
+    </div>
+  <% } else { %>
+    <div id="statbox">
+      <div id="numbooks" class="num">Books: 0</div>
+      <div id="numread" class="num">Books Read: 0</div>
+    </div>
+  <% } %>
+</div>
