@@ -118,25 +118,31 @@ app.get('/home', requireAuth, (req, res) => {
     res.render('home', { title: 'Home', selectedGenre: 'all'});
 });
 
-app.get('/reading', requireAuth, (req, res) => {
-    Book.find({ bstatus: 'Reading' }).sort({ createdAt: -1 })
-        .then((result) => {
-            res.render('reading', { title: 'Reading', books: result, selectedGenre: 'all' })
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+app.get('/reading', requireAuth, async (req, res) => {
+    try {
+        const token = req.cookies.jwt;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const books = await Book.find({ bstatus: 'Reading', user: decoded.id }).sort({ createdAt: -1 });
+        res.render('reading', { title: 'Reading', books, selectedGenre: 'all' });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
-app.get('/read', requireAuth, (req, res) => {
-    Book.find({ bstatus: "Read"}).sort({ createdAt: -1 })
-        .then((result) => {
-            res.render("read",{ title: 'Finished Books', books: result, selectedGenre: 'all' });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+
+app.get('/read', requireAuth, async (req, res) => {
+    try {
+        const token = req.cookies.jwt;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const books = await Book.find({ bstatus: 'Read', user: decoded.id }).sort({ createdAt: -1 });
+        res.render('read', { title: 'Finished Books', books, selectedGenre: 'all' });
+    } catch (err) {
+        console.log(err);
+    }
 });
+
 
 app.get('/addbook', requireAuth, (req, res) => {
     res.render('addbook', { title: 'Add Page', selectedGenre: 'all'})
@@ -205,49 +211,55 @@ app.post('/mark-as-read/:id', requireAuth, async (req, res) => {
 
 //add book
 app.post("/addbook", requireAuth, async (req, res) => {
-
     const { title, author, pages, bstatus, genre } = req.body;
 
-    const book = new Book({ title, author, pages, bstatus, genre });
-
     try {
-        await book.save();
-
         const token = req.cookies.jwt;
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.id);
 
-        user.totalBooks += 1;
+        const book = new Book({
+            title,
+            author,
+            pages,
+            bstatus,
+            genre,
+            user: user._id 
+        });
 
-        if(bstatus === "Read") {
-            user.completedBooks += 1;
-        }
+        await book.save();
+
+        user.totalBooks += 1;
+        if (bstatus === "Read") user.completedBooks += 1;
 
         await user.save();
 
         res.redirect(bstatus === "Read" ? "/read" : "/reading");
-    }
-    catch(err) {
+    } catch (err) {
         console.log(err);
     }
-})
+});
 
 // filter by genre
-app.get("/books", requireAuth, (req, res) => {
+app.get("/books", requireAuth, async (req, res) => {
     const genre = req.query.genre;
 
-    let filter = {};
+    try {
+        const token = req.cookies.jwt;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if(genre) {
-        filter.genre = genre;
+        let filter = { user: decoded.id };
+        if (genre) {
+            filter.genre = genre;
+        }
+
+        const books = await Book.find(filter).sort({ createdAt: -1 });
+        res.render("books", { title: `${genre}`, books, selectedGenre: genre });
+    } catch (err) {
+        console.log(err);
     }
-
-    Book.find(filter)
-        .then((result) => {
-            res.render("books", { title: `${genre}`, books: result, selectedGenre: genre});
-        })
-        .catch((err) => console.log(err));
 });
+
 
 // update progress
 app.post("/update-progress/:id", (req, res) => {
